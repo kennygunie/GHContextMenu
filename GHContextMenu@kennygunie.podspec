@@ -10,7 +10,6 @@ Pod::Spec.new do |s|
                    DESC
 
   s.homepage     = "https://github.com/kennygunie/GHContextMenu"
-  s.screenshots  = "https://raw2.github.com/GnosisHub/GHContextMenu/master/cmov.gif", "https://raw2.github.com/GnosisHub/GHContextMenu/master/cmocv.gif"
 
   s.license      = { :type => 'MIT', :file => 'License.txt' }
 
@@ -20,7 +19,7 @@ Pod::Spec.new do |s|
                       "Kien NGUYEN" => "kennygunie@gmail.com"}
 
   s.platform     = :ios
-  s.source       = { :git => "https://github.com/GnosisHub/GHContextMenu.git", :tag => s.version.to_s }
+  s.source       = { :git => "https://github.com/kennygunie/GHContextMenu.git", :tag => s.version.to_s }
 
   s.source_files  = 'GHContextMenu/GHContextMenuView.{h,m}'
   s.exclude_files = 'Classes/Exclude'
