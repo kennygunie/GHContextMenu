@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, GHContextMenuActionType){
 
 @property (nonatomic, assign) id<GHContextOverlayViewDataSource> dataSource;
 @property (nonatomic, assign) id<GHContextOverlayViewDelegate> delegate;
+@property (nonatomic) UIColor *highlightedColor;
+
 
 @property (nonatomic, assign) GHContextMenuActionType menuActionType;
 

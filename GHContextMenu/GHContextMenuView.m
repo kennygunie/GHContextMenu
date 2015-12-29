@@ -12,10 +12,10 @@
 #define GHDismissAnimationID @"GHContextMenuViewDismissAnimationID"
 
 NSInteger const GHMainItemSize = 44;
-NSInteger const GHMenuItemSize = 40;
+NSInteger const GHMenuItemSize = 66;
 NSInteger const GHBorderWidth  = 5;
 
-CGFloat const   GHAnimationDuration = 0.2;
+CGFloat const   GHAnimationDuration = 0.1;
 CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
 
 
@@ -52,8 +52,8 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
 @property (nonatomic, strong) NSMutableArray* itemLocations;
 @property (nonatomic) NSInteger prevIndex;
 
-@property (nonatomic) CGColorRef itemBGHighlightedColor;
-@property (nonatomic) CGColorRef itemBGColor;
+//@property (nonatomic) CGColorRef itemBGHighlightedColor;
+//@property (nonatomic) CGColorRef itemBGColor;
 
 @end
 
@@ -80,10 +80,10 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
         _menuItems = [NSMutableArray array];
         _itemLocations = [NSMutableArray array];
         _arcAngle = M_PI_2;
-        _radius = 90;
+        _radius = 110;
         
-        self.itemBGColor = [UIColor grayColor].CGColor;
-        self.itemBGHighlightedColor = [UIColor redColor].CGColor;
+        //self.itemBGColor = [UIColor grayColor].CGColor;
+        //self.itemBGHighlightedColor = [UIColor redColor].CGColor;
         
     }
     return self;
@@ -202,9 +202,9 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
     layer.cornerRadius = GHMenuItemSize/2;
     layer.borderColor = [UIColor whiteColor].CGColor;
     layer.borderWidth = GHBorderWidth;
-    layer.shadowColor = [UIColor blackColor].CGColor;
-    layer.shadowOffset = CGSizeMake(0, -1);
-    layer.backgroundColor = self.itemBGColor;
+    //layer.shadowColor = [UIColor blackColor].CGColor;
+    //layer.shadowOffset = CGSizeMake(0, -1);
+    layer.backgroundColor = self.tintColor.CGColor;
     
     CALayer* imageLayer = [CALayer layer];
     imageLayer.contents = (id) image.CGImage;
@@ -246,7 +246,7 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
     
     CGSize itemSize = CGSizeMake(GHMenuItemSize, GHMenuItemSize);
     CGFloat itemRadius = sqrt(pow(itemSize.width, 2) + pow(itemSize.height, 2)) / 2;
-    self.arcAngle = ((itemRadius * self.menuItems.count) / self.radius) * 1.5;
+    self.arcAngle = ((itemRadius * self.menuItems.count) / self.radius);
     
     NSUInteger count = self.menuItems.count;
 	BOOL isFullCircle = (self.arcAngle == M_PI*2);
@@ -272,7 +272,7 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
 - (GHMenuItemLocation*) locationForItemAtIndex:(NSUInteger) index
 {
 	CGFloat itemAngle = [self itemAngleAtIndex:index];
-	
+
 	CGPoint itemCenter = CGPointMake(self.longPressLocation.x + cosf(itemAngle) * self.radius,
 									 self.longPressLocation.y + sinf(itemAngle) * self.radius);
     GHMenuItemLocation *location = [GHMenuItemLocation new];
@@ -284,10 +284,8 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
 
 - (CGFloat) itemAngleAtIndex:(NSUInteger) index
 {
-    float bearingRadians = [self angleBeweenStartinPoint:self.longPressLocation endingPoint:self.center];
-    
+    float bearingRadians = [self angleBeweenStartinPoint:self.longPressLocation endingPoint:CGPointMake(self.center.x, self.radius)];
     CGFloat angle =  bearingRadians - self.arcAngle/2;
-    
 	CGFloat itemAngle = angle + (index * self.angleBetweenItems);
     
     if (itemAngle > 2 *M_PI) {
@@ -359,11 +357,11 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
             
             CGFloat toleranceDistance = (self.radius - GHMainItemSize/(2*sqrt(2)) - GHMenuItemSize/(2*sqrt(2)) )/2;
             
-            CGFloat distanceFromItem = fabsf(distanceFromCenter - self.radius) - GHMenuItemSize/(2*sqrt(2)) ;
+            CGFloat distanceFromItem = fabs(distanceFromCenter - self.radius) - GHMenuItemSize/(2*sqrt(2)) ;
             
             if (fabs(distanceFromItem) < toleranceDistance ) {
                 CALayer *layer = [self.menuItems objectAtIndex:closeToIndex];
-                layer.backgroundColor = self.itemBGHighlightedColor;
+                layer.backgroundColor = self.highlightedColor.CGColor;
                 
                 CGFloat distanceFromItemBorder = fabs(distanceFromItem);
                 
@@ -403,7 +401,7 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
         CALayer *layer = self.menuItems[self.prevIndex];
         GHMenuItemLocation* itemLocation = [self.itemLocations objectAtIndex:self.prevIndex];
         layer.position = itemLocation.position;
-        layer.backgroundColor = self.itemBGColor;
+        layer.backgroundColor = self.tintColor.CGColor;
         layer.transform = CATransform3DIdentity;
         self.prevIndex = -1;
     }
@@ -451,6 +449,7 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
         
         layer.position = location.position;
         layer.opacity = toAlpha;
+        layer.backgroundColor = self.tintColor.CGColor;
         
     }
     else if([anim valueForKey:GHDismissAnimationID]) {
@@ -460,7 +459,7 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
         [CATransaction begin];
         [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
         layer.position = toPosition;
-        layer.backgroundColor = self.itemBGColor;
+        layer.backgroundColor = self.tintColor.CGColor;
         layer.opacity = 0.0f;
         layer.transform = CATransform3DIdentity;
         [CATransaction commit];
