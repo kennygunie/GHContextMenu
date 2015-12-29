@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 
-  s.name         = "GHContextMenu"
+  s.name         = "GHContextMenu@kennygunie"
   s.version      = "0.0.1"
   s.summary      = "Fork of kennygunie"
 
