@@ -7,6 +7,7 @@
 //
 
 #import "GHContextMenuView.h"
+@import CoreText;
 
 #define GHShowAnimationID @"GHContextMenuViewRriseAnimationID"
 #define GHDismissAnimationID @"GHContextMenuViewDismissAnimationID"
@@ -195,7 +196,7 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
     }
 }
 
-- (CALayer*) layerWithImage:(UIImage*) image
+- (CALayer*) layerWithImage:(UIImage*) image text:(NSString *)text
 {
     CALayer *layer = [CALayer layer];
     layer.bounds = CGRectMake(0, 0, GHMenuItemSize, GHMenuItemSize);
@@ -211,6 +212,25 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
     imageLayer.bounds = CGRectMake(0, 0, GHMenuItemSize*2/3, GHMenuItemSize*2/3);
     imageLayer.position = CGPointMake(GHMenuItemSize/2, GHMenuItemSize/2);
     [layer addSublayer:imageLayer];
+    CATextLayer *textLayer = [CATextLayer new];
+    textLayer.string = text;
+    NSString *fontName = @"Avenir-Light";
+    textLayer.font = (__bridge CFTypeRef _Nullable)(fontName);
+    textLayer.fontSize = 14.f;
+    CGRect fitSize = [textLayer.string boundingRectWithSize:CGSizeMake(300.f, CGFLOAT_MAX)
+                                                    options:NSStringDrawingUsesLineFragmentOrigin
+                                                 attributes:@{NSFontAttributeName:[UIFont fontWithName:fontName size:textLayer.fontSize]}
+                                                    context:nil];
+    
+    CGFloat offSet = 10.f;
+    textLayer.frame = CGRectMake((GHMenuItemSize - fitSize.size.width - offSet)/2, -25, fitSize.size.width + offSet, fitSize.size.height);
+    textLayer.wrapped = YES;
+    textLayer.alignmentMode = kCAAlignmentCenter;
+    textLayer.contentsScale = [UIScreen mainScreen].scale;
+    textLayer.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.4f].CGColor;
+    textLayer.cornerRadius = offSet/2;
+
+    [layer addSublayer:textLayer];
     
     return layer;
 }
@@ -233,7 +253,8 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
         NSInteger count = [self.dataSource numberOfMenuItems];
         for (int i = 0; i < count; i++) {
             UIImage* image = [self.dataSource imageForItemAtIndex:i];
-            CALayer *layer = [self layerWithImage:image];
+            NSString *text = [self.dataSource textForItemAtIndex:i];
+            CALayer *layer = [self layerWithImage:image text:text];
             [self.layer addSublayer:layer];
             [self.menuItems addObject:layer];
         }
@@ -252,7 +273,7 @@ CGFloat const   GHAnimationDelay = GHAnimationDuration/5;
 	BOOL isFullCircle = (self.arcAngle == M_PI*2);
 	NSUInteger divisor = (isFullCircle) ? count : count - 1;
 
-    self.angleBetweenItems = self.arcAngle/divisor;
+    self.angleBetweenItems = self.arcAngle*1.2/divisor;
     
     for (int i = 0; i < self.menuItems.count; i++) {
         GHMenuItemLocation *location = [self locationForItemAtIndex:i];
